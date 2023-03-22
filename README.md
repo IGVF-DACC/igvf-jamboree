@@ -74,6 +74,8 @@ kubectl --namespace jhub apply -f data_pvc.yaml
 kubectl --namespace jhub get pvc
 ```
 
+Make a copy of `template.config.yaml` and rename it to `config.yaml`.
+
 Generate a secret token and add it to `config.yaml`.
 ```bash
 openssl rand -hex 32
