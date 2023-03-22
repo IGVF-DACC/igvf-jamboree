@@ -1,0 +1,70 @@
+debug:
+  enabled: true
+
+proxy:
+  secretToken: "SECRET_TOKEN"
+  https:
+    enabled: false
+# keep it as commented, will automatically assign new ip
+#  service:
+#    loadBalancerIP: 35.208.245.166
+
+scheduling:
+  userScheduler:
+    enabled: false
+  podPriority:
+    enabled: true
+  userPlaceholder:
+    enabled: true
+    replicas: 3
+  userPods:
+    nodeAffinity:
+      matchNodePurpose: require
+
+singleuser:
+  memory:
+    limit: 20G
+    guarantee: 1G
+  cpu:
+    limit: 4
+    guarantee: 1
+  image:
+    # name: encodedcc/atac-seq-pipeline
+    # tag: v2.2.2
+    name: jupyterhub/k8s-singleuser-sample
+    tag: 2.0.0
+  storage:
+    capacity: 30Gi
+    # extraVolumes:
+    #   - name: crispr-fg-jamboree-data-pv
+    #     persistentVolumeClaim:
+    #       claimName: crispr-fg-jamboree-data-pvc
+    #       # Set this annotation to NOT let Kubernetes automatically create
+    #       # a persistent volume for this volume claim.
+    #       storageClass: ""
+    # extraVolumeMounts:
+    #   - name: crispr-fg-jamboree-data-pv
+    #     mountPath: /mnt/crispr-fg-jamboree-data-pv
+    # defaultUrl: "/lab"
+  extraEnv:
+    JUPYTERHUB_SINGLEUSER_APP: "jupyter_server.serverapp.ServerApp"
+
+hub:
+  config:
+    Authenticator:
+      admin_users:
+        - idan
+        - jin
+      allowed_users:
+        - user1
+        - user2
+        - user3
+    DummyAuthenticator:
+      password: jamboreeTest
+    JupyterHub:
+      authenticator_class: dummy
+
+cull:
+  enabled: true
+  timeout: 1800
+  every: 180
