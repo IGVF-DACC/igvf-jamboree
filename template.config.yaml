@@ -2,12 +2,9 @@ debug:
   enabled: true
 
 proxy:
-  secretToken: "SECRET_TOKEN"
+  secretToken: "XXXXXXXXXXXXXX"
   https:
     enabled: false
-# keep it as commented, will automatically assign new ip
-#  service:
-#    loadBalancerIP: 35.208.245.166
 
 scheduling:
   userScheduler:
@@ -19,9 +16,10 @@ scheduling:
     replicas: 3
   userPods:
     nodeAffinity:
-      matchNodePurpose: require
+      matchNodePurpose: prefer
 
 singleuser:
+  # 32 cores, 64GB for the jamboree
   memory:
     limit: 20G
     guarantee: 1G
@@ -29,23 +27,20 @@ singleuser:
     limit: 4
     guarantee: 1
   image:
-    # name: encodedcc/atac-seq-pipeline
-    # tag: v2.2.2
-    name: jupyterhub/k8s-singleuser-sample
-    tag: 2.0.0
+    name: leepc12/test-jupyterhub
+    tag: v0.2.0
   storage:
+    # boot disk size
     capacity: 30Gi
-    # extraVolumes:
-    #   - name: crispr-fg-jamboree-data-pv
-    #     persistentVolumeClaim:
-    #       claimName: crispr-fg-jamboree-data-pvc
-    #       # Set this annotation to NOT let Kubernetes automatically create
-    #       # a persistent volume for this volume claim.
-    #       storageClass: ""
-    # extraVolumeMounts:
-    #   - name: crispr-fg-jamboree-data-pv
-    #     mountPath: /mnt/crispr-fg-jamboree-data-pv
-    # defaultUrl: "/lab"
+    # shared data
+    extraVolumes:
+      - name: crispr-fg-jamboree-data-pv
+        persistentVolumeClaim:
+          claimName: crispr-fg-jamboree-data-pvc
+          storageClass: ""
+    extraVolumeMounts:
+      - name: crispr-fg-jamboree-data-pv
+        mountPath: /mnt/shared
   extraEnv:
     JUPYTERHUB_SINGLEUSER_APP: "jupyter_server.serverapp.ServerApp"
 
@@ -60,11 +55,14 @@ hub:
         - user2
         - user3
     DummyAuthenticator:
-      password: jamboreeTest
+      password: PASSWORDPASSWORD
     JupyterHub:
       authenticator_class: dummy
 
 cull:
-  enabled: true
-  timeout: 1800
-  every: 180
+  # need to enable later to shutdown idle pods
+  enabled: false
+  # shutdown if idle longer than (in seconds)
+  timeout: 18000
+  # ping (in seconds)
+  every: 1800

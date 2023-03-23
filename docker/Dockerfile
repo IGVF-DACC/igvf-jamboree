@@ -1,10 +1,34 @@
-# Download base image ubuntu 22.04
-FROM continuumio/miniconda3:latest
+ARG PARENT_DOCKER
 
-# LABEL about the custom image
-LABEL maintainer="bioinfolucas@gmail"
-LABEL version="0.1"
-LABEL description="First test"
+ARG NB_USER="jovyan"
+ARG NB_UID=1000
+ARG NB_GID=100
+
+FROM "$PARENT_DOCKER"
+
+ENV DEBIAN_FRONTEND noninteractive
+
+USER root
+RUN chmod -R 777 /opt && mkdir /data && chmod 775 /data
+RUN APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=1 && \
+    apt-get update && \
+    apt-get install --yes --no-install-recommends \
+    ca-certificates \
+    fonts-liberation \
+    locales \
+    sudo \
+    wget \
+    build-essential \
+    git \
+    software-properties-common \
+    apt-transport-https \
+    python3-pip && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* && \
+    echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
+    locale-gen
+
+
+########### custom software installation
 
 # Update Ubuntu Software repository
 RUN conda install -c conda-forge mamba -y
@@ -30,6 +54,17 @@ RUN mamba install -c conda-forge r-ggplot2
 RUN Rscript -e 'devtools::install_github("katsevich-lab/sceptre")'
 RUN Rscript -e 'BiocManager::install("ShortRead")'
 RUN Rscript -e 'devtools::install_github("chris-mcginnis-ucsf/MULTI-seq")'
-RUN mamba install -c bioconda ucsc-blat -y
-EXPOSE 80 443 8080
+#RUN mamba install -c bioconda ucsc-blat==377 -y
 
+################################################
+
+
+ENV HOME /home/$NB_USER
+
+RUN echo 'root:jamboree'|chpasswd && \
+    echo 'jovyan:jamboree'|chpasswd && \
+    sed -i.bak -e 's/#%admin/%admin/' /etc/sudoers && \
+    sed -i.bak -e 's/#%sudo/%sudo/' /etc/sudoers && \
+    usermod -aG sudo jovyan && \
+    chmod 0440 /etc/sudoers && \
+    chmod -R 755 /home/$NB_USER
