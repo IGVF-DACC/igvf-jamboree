@@ -12,5 +12,5 @@ spec:
   accessModes:
     - ReadOnlyMany
   gcePersistentDisk:
-    pdName: crispr-fg-jamboree-data-pv-persistentdisk
+    pdName: crispr-fg-jamboree-data-pd
     fsType: ext4

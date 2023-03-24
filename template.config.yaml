@@ -23,15 +23,19 @@ singleuser:
   memory:
     limit: 20G
     guarantee: 1G
+    # limit: 68G
+    # guarantee: 64G
   cpu:
     limit: 4
     guarantee: 1
+    # limit: 34
+    # guarantee: 32
   image:
     name: leepc12/test-jupyterhub
     tag: v0.2.0
   storage:
     # boot disk size
-    capacity: 30Gi
+    capacity: 100Gi
     # shared data
     extraVolumes:
       - name: crispr-fg-jamboree-data-pv

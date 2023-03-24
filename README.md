@@ -8,12 +8,16 @@ sudo snap install helm --classic
 
 Create a new project on GCP web console and authenticate with `gcloud` via command line.
 ```bash
-GCP_PROJECT=igvf-jamboree
+GCP_PROJECT=som-igvf-jamboree
 
 gcloud auth login --no-launch-browser
 gcloud auth application-default login --no-launch-browser
 gcloud config set project "$GCP_PROJECT"
 ```
+
+Enable APIs on the web console.
+- Kubernetes Engine API
+
 
 ### Persistent disk for shared data
 
