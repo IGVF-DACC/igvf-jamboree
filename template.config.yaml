@@ -69,6 +69,6 @@ cull:
   # need to enable later to stop idle pods
   enabled: true
   # shutdown if idle longer than (in seconds)
-  timeout: 10800
+  timeout: 7200
   # ping (in seconds)
   every: 600
