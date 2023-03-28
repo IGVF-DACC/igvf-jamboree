@@ -1,6 +1,6 @@
 REGISTRY?=leepc12
-IMAGE_NAME?=test-jupyterhub
-VERSION=v0.2.0
+IMAGE_NAME?=igvf-jamboree-2023
+VERSION=v0.1.0
 
 PARENT_DOCKER=jupyter/base-notebook
 

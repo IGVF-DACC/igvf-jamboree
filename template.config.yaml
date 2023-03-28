@@ -2,7 +2,7 @@ debug:
   enabled: true
 
 proxy:
-  secretToken: "XXXXXXXXXXXXXX"
+  secretToken: TOKEN_HERE
   https:
     enabled: false
 
@@ -19,32 +19,30 @@ scheduling:
       matchNodePurpose: prefer
 
 singleuser:
-  # 32 cores, 64GB for the jamboree
   memory:
-    limit: 20G
-    guarantee: 1G
-    # limit: 68G
-    # guarantee: 64G
+    limit: 16G
+    guarantee: 12G
   cpu:
-    limit: 4
-    guarantee: 1
-    # limit: 34
-    # guarantee: 32
+    limit: 7
+    guarantee: 7
   image:
-    name: leepc12/test-jupyterhub
-    tag: v0.2.0
+    name: leepc12/igvf-jamboree-2023
+    tag: v0.1.0
   storage:
     # boot disk size
     capacity: 100Gi
-    # shared data
+    # shared data disk
     extraVolumes:
-      - name: crispr-fg-jamboree-data-pv
+      - name: igvf-jamboree-data-pv
         persistentVolumeClaim:
-          claimName: crispr-fg-jamboree-data-pvc
+          claimName: igvf-jamboree-data-pvc
+          readOnly: true
           storageClass: ""
     extraVolumeMounts:
-      - name: crispr-fg-jamboree-data-pv
+      - name: igvf-jamboree-data-pv
         mountPath: /mnt/shared
+        readOnly: true
+  # defaultUrl: "/lab"
   extraEnv:
     JUPYTERHUB_SINGLEUSER_APP: "jupyter_server.serverapp.ServerApp"
 
@@ -52,21 +50,25 @@ hub:
   config:
     Authenticator:
       admin_users:
-        - idan
-        - jin
+        - leepc12@stanford.edu
+        - bioinfolucas@gmail.com
       allowed_users:
-        - user1
-        - user2
-        - user3
-    DummyAuthenticator:
-      password: PASSWORDPASSWORD
+        - test1
+        - test2
+        - test3
+        - test4
+        - test5
+        - test6
+        - test7
+      DummyAuthenticator:
+      password: THIS_IS_A_SHARED_PASSWORD
     JupyterHub:
       authenticator_class: dummy
 
 cull:
-  # need to enable later to shutdown idle pods
-  enabled: false
+  # need to enable later to stop idle pods
+  enabled: true
   # shutdown if idle longer than (in seconds)
-  timeout: 18000
+  timeout: 10800
   # ping (in seconds)
-  every: 1800
+  every: 600

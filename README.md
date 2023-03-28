@@ -23,9 +23,16 @@ Enable APIs on the web console.
 
 Create a new persitent disk in GCP project on the web console. Make sure that it's created on the same zone as `ZONE` defined below. Attach it to any VM. SSH to the VM and format the disk and add shared data to `/mnt/shared`. All participants will have read access to this data disk:
 ```bash
+# get device name of the attached disk
+lsblk
+
+# define device name
 DEVICE_NAME=sdb
 
+# format the disk
 sudo mkfs.ext4 -m 0 -E lazy_itable_init=0,lazy_journal_init=0,discard "/dev/$DEVICE_NAME"
+
+# mount it
 sudo mkdir -p /mnt/shared
 sudo mount -o discard,defaults "/dev/$DEVICE_NAME" /mnt/shared
 ```
@@ -40,21 +47,36 @@ See [README](docker/README.md).
 
 ### Kubernetes cluster on GCP
 
-Create a new Kubernetes cluster on GCP. `MACHINE_TYPE_MASTER` is GCP machine type for the load balancer + web server.
+Set your admin role. Use your gmail account for env var `ADMIN`.
+```bash
+ADMIN=leepc12@stanford.edu
+
+kubectl create clusterrolebinding cluster-admin-binding \
+  --clusterrole=cluster-admin \
+  --user="$ADMIN"
+```
+
+Create a new Kubernetes cluster on GCP.
 ```bash
 CLUSTER_NAME=igvf-jamboree
-MACHINE_TYPE_MASTER=n1-standard-4
-NUM_NODES=10
 ZONE=us-central1-a
 
 gcloud container clusters create \
-	--machine-type "$MACHINE_TYPE_MASTER" \
-	--num-nodes "$NUM_NODES" \
+	--machine-type n1-standard-8 \
+	--num-nodes 2 \
 	--zone "$ZONE" \
-	--disk-size=50Gi \
+	--disk-size=110Gi \
 	--cluster-version latest \
+	--enable-autoscaling \
+	--min-nodes=2 \
+	--max-nodes=100 \
 	--no-enable-ip-alias \
 	"$CLUSTER_NAME"
+```
+
+Close the cluster later after the jamboree.
+```bash
+gcloud container clusters delete --zone "$ZONE" "$CLUSTER_NAME"
 ```
 
 ### Zero to Jupyterhub (Z2JH) configuration
@@ -97,28 +119,17 @@ To install a new deploy:
 helm upgrade --install --cleanup-on-fail --namespace jhub  --version 1.2.0 --values config.yaml --set global.safeToShowValues=true jhub jupyterhub/jupyterhub --timeout 30m
 ```
 
-Re-deploy after changing `config.yaml`.
-```bash
-helm upgrade --cleanup-on-fail --namespace jhub  --version 1.2.0 --values config.yaml --set global.safeToShowValues=true jhub jupyterhub/jupyterhub --timeout 30m
-````
-
 Get a public IP address of the load balancer. It takes about a minute to get an external IP address.
 ```bash
 kubectl -n jhub get svc proxy-public
 ```
 
-Users/admins can connect to the load balancer UI with `http://PUBLIC_IP/`.
+Users/admins can connect to the load balancer UI with `http://SERVER_PUBLIC_IP/`.
 
-
-### Closing Kubernetes cluster
-
+To re-deploy after changing `config.yaml`.
 ```bash
-CLUSTER_NAME=igvf-jamboree
-ZONE=us-central1-a
-
-gcloud container clusters delete --zone "$ZONE" "$CLUSTER_NAME"
-```
-
+helm upgrade --cleanup-on-fail --namespace jhub  --version 1.2.0 --values config.yaml --set global.safeToShowValues=true jhub jupyterhub/jupyterhub --timeout 30m
+````
 
 ### Contribution
 

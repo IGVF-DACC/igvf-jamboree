@@ -20,7 +20,7 @@ Edit `custom software installation` section in `Dockerfile`.
 
 ...
 
-################################################
+########################################
 ```
 
 Make it and push to dockerhub.

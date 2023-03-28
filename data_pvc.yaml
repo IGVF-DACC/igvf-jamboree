@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: crispr-fg-jamboree-data-pvc
+  name: igvf-jamboree-data-pvc
   namespace: jhub
 spec:
   storageClassName: ""
-  volumeName: crispr-fg-jamboree-data-pv
+  volumeName: igvf-jamboree-data-pv
   accessModes:
     - ReadOnlyMany
   resources:
