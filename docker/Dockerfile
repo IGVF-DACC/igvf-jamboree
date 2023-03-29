@@ -31,30 +31,35 @@ RUN APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=1 && \
 ########### custom software installation
 
 # Update Ubuntu Software repository
-RUN conda install -c conda-forge mamba -y
 RUN pip install nextflow
 RUN pip uninstall GTFProcessing -y
 RUN pip install git+https://github.com/LucasSilvaFerreira/GTFProcessing.git
 RUN pip install gtfparse==1.3.0
 RUN pip install git+https://github.com/LucasSilvaFerreira/Perturb_Loader.git
+RUN pip install --quiet kb-python
+RUN conda install -c conda-forge mamba -y
 RUN mamba install -c bioconda nextflow -y
 RUN mamba install -c bioconda kallisto -y
-RUN pip install --quiet kb-python
 RUN mamba install -c anaconda openpyxl -y
 RUN mamba install -c conda-forge r-base -y
+RUN mamba install -c conda-forge r-gert -y
+RUN mamba install -c conda-forge r-ragg -y
+RUN mamba install -c conda-forge r-ggplot2
 RUN Rscript -e 'install.packages("BiocManager", repos = "http://cran.us.r-project.org")'
 RUN Rscript -e 'BiocManager::install("Rhdf5lib")'
 RUN Rscript -e 'BiocManager::install("rhdf5")'
+RUN Rscript -e 'BiocManager::install("ShortRead")'
 RUN Rscript -e 'install.packages("doParallel", repos = "http://cran.us.r-project.org")'
 RUN Rscript -e 'install.packages("devtools", repos = "http://cran.us.r-project.org")'
-RUN mamba install -c conda-forge r-gert -y
-RUN mamba install -c conda-forge r-ragg -y
-RUN Rscript -e 'install.packages("devtools", repos = "http://cran.us.r-project.org")'
-RUN mamba install -c conda-forge r-ggplot2
 RUN Rscript -e 'devtools::install_github("katsevich-lab/sceptre")'
-RUN Rscript -e 'BiocManager::install("ShortRead")'
 RUN Rscript -e 'devtools::install_github("chris-mcginnis-ucsf/MULTI-seq")'
-#RUN mamba install -c bioconda ucsc-blat==377 -y
+RUN pip install muon
+RUN pip install deeptools
+
+RUN apt-get update -y && apt-get install -y curl gpg-agent
+RUN echo "deb https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+RUN apt-get update -y && apt-get install -y google-cloud-sdk
 
 ################################################
 
