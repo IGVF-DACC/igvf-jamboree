@@ -13,7 +13,7 @@ scheduling:
     enabled: true
   userPlaceholder:
     enabled: true
-    replicas: 3
+    replicas: 1
   userPods:
     nodeAffinity:
       matchNodePurpose: prefer
@@ -27,7 +27,7 @@ singleuser:
     guarantee: 7
   image:
     name: leepc12/igvf-jamboree-2023
-    tag: v0.1.0
+    tag: v0.1.3
   storage:
     # boot disk size
     capacity: 100Gi
@@ -42,7 +42,6 @@ singleuser:
       - name: igvf-jamboree-data-pv
         mountPath: /mnt/shared
         readOnly: true
-  # defaultUrl: "/lab"
   extraEnv:
     JUPYTERHUB_SINGLEUSER_APP: "jupyter_server.serverapp.ServerApp"
 
@@ -50,7 +49,7 @@ hub:
   config:
     Authenticator:
       admin_users:
-        - leepc12@stanford.edu
+        - leepc13@stanford.edu
         - bioinfolucas@gmail.com
       allowed_users:
         - test1
@@ -69,6 +68,6 @@ cull:
   # need to enable later to stop idle pods
   enabled: true
   # shutdown if idle longer than (in seconds)
-  timeout: 7200
+  timeout: 1800
   # ping (in seconds)
-  every: 600
+  every: 180
