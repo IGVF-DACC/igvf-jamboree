@@ -21,13 +21,17 @@ Enable APIs on the web console.
 
 ### Persistent disk for shared data
 
-Create a new persitent disk in GCP project on the web console. Make sure that it's created on the same zone as `ZONE` defined below. Attach it to any VM. SSH to the VM and format the disk and add shared data to `/mnt/shared`. All participants will have read access to this data disk:
+Create a new `Zonal Standard Persistent Disk` in GCP project on the web console.
+
+Note that `Regional Balanced Persistent Disk` can be attach to at most 10 instances in read-only mode. So `Zonal Standard Persistent Disk` is recommended for a jamboree with >10 participants.
+
+Make sure that it's created on the same zone as `ZONE` defined below. Attach it to any VM. SSH to the VM and format the disk and add shared data to `/mnt/shared`. All participants will have read access to this data disk:
 ```bash
 # get device name of the attached disk
 lsblk
 
 # define device name
-DEVICE_NAME=sdb
+DEVICE_NAME=sdc
 
 # format the disk
 sudo mkfs.ext4 -m 0 -E lazy_itable_init=0,lazy_journal_init=0,discard "/dev/$DEVICE_NAME"
@@ -63,12 +67,12 @@ ZONE=us-central1-a
 
 gcloud container clusters create \
 	--machine-type n1-standard-8 \
-	--num-nodes 2 \
+	--num-nodes 1 \
 	--zone "$ZONE" \
 	--disk-size=110Gi \
 	--cluster-version latest \
 	--enable-autoscaling \
-	--min-nodes=2 \
+	--min-nodes=1 \
 	--max-nodes=100 \
 	--no-enable-ip-alias \
 	"$CLUSTER_NAME"
@@ -78,6 +82,9 @@ Close the cluster later after the jamboree.
 ```bash
 gcloud container clusters delete --zone "$ZONE" "$CLUSTER_NAME"
 ```
+
+Note that deleting a cluster does not delete all persistent disks for individual users. You need to manually delete all  `pvc-*` disks on the web console.
+
 
 ### Zero to Jupyterhub (Z2JH) configuration
 
@@ -89,27 +96,22 @@ helm repo add jupyterhub https://jupyterhub.github.io/helm-chart/
 helm repo update
 ````
 
-Create a namespace for Jupyterhub.
+Create a namespace for Jupyterhub and add shared disk's name to `data_pv.yaml` and run the followings.
 ```bash
 kubectl create -f namespace_jhub.yaml
 kubectl get namespace
-````
 
-Add the persistent disk (for shared data) to the cluster.
-```bash
 kubectl --namespace jhub apply -f data_pv.yaml
 kubectl --namespace jhub apply -f data_pvc.yaml
 kubectl --namespace jhub get pvc
 ```
-
-Make a copy of `template.config.yaml` and rename it to `config.yaml`.
 
 Generate a secret token and add it to `config.yaml`.
 ```bash
 openssl rand -hex 32
 ```
 
-Edit `config.yaml` to define docker image for user's pod instance and persistent disk (for shared data) to be attached.
+Make a copy of `template.config.yaml` and rename it to `config.yaml`. Edit `config.yaml` to define docker image for user's pod instance and persistent disk (for shared data) to be attached.
 
 
 ### Deployment
