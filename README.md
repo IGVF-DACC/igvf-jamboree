@@ -23,7 +23,7 @@ Enable APIs on the web console.
 
 Create a new `Zonal Standard Persistent Disk` in GCP project on the web console.
 
-Note that `Regional Balanced Persistent Disk` can be attach to at most 10 instances in read-only mode. So `Zonal Standard Persistent Disk` is recommended for a jamboree with >10 participants.
+Note that `Zonal/Regional Balanced Persistent Disk` can be attach to at most 10 instances in read-only mode. So `Zonal Standard Persistent Disk` is recommended for a jamboree with >10 participants.
 
 Make sure that it's created on the same zone as `ZONE` defined below. Attach it to any VM. SSH to the VM and format the disk and add shared data to `/mnt/shared`. All participants will have read access to this data disk:
 ```bash
