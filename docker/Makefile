@@ -1,7 +1,7 @@
 REGISTRY?=leepc12
 IMAGE_NAME?=igvf-jamboree-2023
-CACHE_VERSION=v0.1.1
-VERSION=v0.1.3
+CACHE_VERSION=v0.1.3
+VERSION=v0.1.4
 
 PARENT_DOCKER=jupyter/base-notebook
 

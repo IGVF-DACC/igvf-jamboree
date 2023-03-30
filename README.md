@@ -31,7 +31,7 @@ Make sure that it's created on the same zone as `ZONE` defined below. Attach it 
 lsblk
 
 # define device name
-DEVICE_NAME=sdc
+DEVICE_NAME=sdb
 
 # format the disk
 sudo mkfs.ext4 -m 0 -E lazy_itable_init=0,lazy_journal_init=0,discard "/dev/$DEVICE_NAME"
@@ -41,7 +41,7 @@ sudo mkdir -p /mnt/shared
 sudo mount -o discard,defaults "/dev/$DEVICE_NAME" /mnt/shared
 ```
 
-Make sure to detach the disk (detach it on GCP web console) before adding it to Kubernetes cluster. Check if `in use by` field on GCP web console is blank. Edit `data_pv.yaml` and `data_pvc.yaml` accordingly.
+Make sure to detach the disk (detach it on GCP web console) before adding it to Kubernetes cluster. Check if `in use by` field on GCP web console is blank. Edit `data_pv.yaml` to add persistent disk's name to it.
 
 
 ### Docker image for user's pod instance

@@ -61,6 +61,10 @@ RUN echo "deb https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /et
 RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 RUN apt-get update -y && apt-get install -y google-cloud-sdk
 
+RUN pip install scrublet
+RUN pip install pybiomart
+RUN mamba create -n pygenomictracks pygenometracks==3.8 -c bioconda -y
+
 ################################################
 
 
