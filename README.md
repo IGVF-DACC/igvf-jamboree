@@ -62,7 +62,7 @@ kubectl create clusterrolebinding cluster-admin-binding \
 
 Create a new Kubernetes cluster on GCP.
 ```bash
-CLUSTER_NAME=igvf-jamboree
+CLUSTER_NAME=igvf-jamboree-2023
 ZONE=us-central1-a
 
 gcloud container clusters create \
@@ -132,6 +132,11 @@ To re-deploy after changing `config.yaml`.
 ```bash
 helm upgrade --cleanup-on-fail --namespace jhub  --version 1.2.0 --values config.yaml --set global.safeToShowValues=true jhub jupyterhub/jupyterhub --timeout 30m
 ````
+
+### Login password
+
+No password is needed for the first login. Users input their own password for the first login.
+
 
 ### Contribution
 

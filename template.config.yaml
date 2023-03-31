@@ -49,8 +49,8 @@ hub:
   config:
     Authenticator:
       admin_users:
-        - leepc13@stanford.edu
-        - bioinfolucas@gmail.com
+        - leepc12
+        - bioinfolucas
       allowed_users:
         - test1
         - test2
@@ -59,10 +59,12 @@ hub:
         - test5
         - test6
         - test7
-      DummyAuthenticator:
-      password: THIS_IS_A_SHARED_PASSWORD
+    #   DummyAuthenticator:
+    #   password: THIS_IS_A_SHARED_PASSWORD
+    # JupyterHub:
+    #   authenticator_class: dummy
     JupyterHub:
-      authenticator_class: dummy
+      authenticator_class: "firstuseauthenticator.FirstUseAuthenticator"
 
 cull:
   # need to enable later to stop idle pods
