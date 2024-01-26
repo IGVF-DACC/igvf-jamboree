@@ -1,13 +1,18 @@
 ### Software installation
 
-Install `gcloud` SDK and `helm`.
+Install `gcloud` SDK and `helm` on your computer.
 ```bash
 sudo apt-get install google-cloud-sdk-gke-gcloud-auth-plugin
 sudo snap install helm --classic
 ```
 
-Create a new project on GCP web console and authenticate with `gcloud` via command line.
+Create a new project on GCP web console and enable the following APIs on the web console.
+- Kubernetes Engine API
+
+
+Authenticate with `gcloud` via command line.
 ```bash
+# your GCP project name
 GCP_PROJECT=som-igvf-jamboree
 
 gcloud auth login --no-launch-browser
@@ -15,15 +20,12 @@ gcloud auth application-default login --no-launch-browser
 gcloud config set project "$GCP_PROJECT"
 ```
 
-Enable APIs on the web console.
-- Kubernetes Engine API
-
 
 ### Persistent disk for shared data
 
 Create a new `Zonal Standard Persistent Disk` in GCP project on the web console.
 
-Note that `Zonal/Regional Balanced Persistent Disk` can be attach to at most 10 instances in read-only mode. So `Zonal Standard Persistent Disk` is recommended for a jamboree with >10 participants.
+Note that `Zonal/Regional Balanced Persistent Disk` can be attached to at most 10 instances in read-only mode. So `Zonal Standard Persistent Disk` is recommended for a jamboree with >10 participants.
 
 Make sure that it's created on the same zone as `ZONE` defined below. Attach it to any VM. SSH to the VM and format the disk and add shared data to `/mnt/shared`. All participants will have read access to this data disk:
 ```bash
@@ -53,6 +55,7 @@ See [README](docker/README.md).
 
 Set your admin role. Use your gmail account for env var `ADMIN`.
 ```bash
+# admin's google account email
 ADMIN=leepc12@stanford.edu
 
 kubectl create clusterrolebinding cluster-admin-binding \
