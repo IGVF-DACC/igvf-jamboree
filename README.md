@@ -35,7 +35,7 @@ Create a new `Zonal Standard (HDD) Persistent Disk` in GCP project on the web co
 
 Note that `Balanced (SSD) Persistent Disk` can be attached to at most 10 instances in read-only mode. Find details in the following documentation.
 - [PD limitation](https://cloud.google.com/compute/docs/disks#pdnumberlimits)
-- [Regional PD limitation]https://cloud.google.com/compute/docs/disks/regional-persistent-disk#limitations
+- [Regional PD limitation](https://cloud.google.com/compute/docs/disks/regional-persistent-disk#limitations)
 
 So `Zonal Standard (HDD) Persistent Disk` is recommended for a jamboree with >10 participants.
 
