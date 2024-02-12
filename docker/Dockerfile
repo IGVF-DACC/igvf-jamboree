@@ -65,6 +65,27 @@ RUN pip install scrublet
 RUN pip install pybiomart
 RUN mamba create -n pygenomictracks pygenometracks==3.8 -c bioconda -y
 
+## Lucas and Alex
+RUN mamba install star -c bioconda -y
+
+## Andreas
+RUN mamba install r-mass -c bioconda -y
+RUN mamba install r-seurat -c conda-forge -y
+RUN Rscript -e 'BiocManager::install("edgeR")'
+
+## Eugene
+RUN wget https://raw.githubusercontent.com/Katsevich-Lab/sceptre-igvf/main/requirements.txt
+RUN pip install -r requirements.txt
+RUN mamba install r-remotes -c conda-forge -y
+RUN Rscript -e 'remotes::install_github("ilia-kats/MuData")'
+RUN wget https://raw.githubusercontent.com/Katsevich-Lab/sceptre-igvf/main/renv.lock
+RUN mamba install r-renv -c conda-forge -y
+ENV RENV_PATHS_LIBRARY renv/library
+RUN Rscript -e 'renv::restore()'
+
+## Others
+RUN mamba install r-studio -c conda-forge -y
+
 ################################################
 
 
