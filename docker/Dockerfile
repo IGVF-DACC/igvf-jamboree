@@ -83,8 +83,9 @@ RUN mamba install r-renv -c conda-forge -y
 ENV RENV_PATHS_LIBRARY renv/library
 RUN Rscript -e 'renv::restore()'
 
-## Others
-RUN mamba install r-studio -c conda-forge -y
+# Install IRkernel and register the kernel
+RUN R -e "install.packages('IRkernel', repos='http://cran.rstudio.com/')"
+RUN R -e "IRkernel::installspec()"
 
 ################################################
 
