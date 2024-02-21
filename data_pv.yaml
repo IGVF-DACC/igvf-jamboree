@@ -8,11 +8,11 @@ spec:
     name: igvf-jamboree-data-pvc
     namespace: jhub
   capacity:
-    storage: 100G
+    storage: 500G
   accessModes:
     - ReadOnlyMany
   persistentVolumeReclaimPolicy: Retain
   gcePersistentDisk:
-    pdName: igvf-jamboree-data-standard-pd
+    pdName: jamboree-test 
     readOnly: true
     fsType: ext4

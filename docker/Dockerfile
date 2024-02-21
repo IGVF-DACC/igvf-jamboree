@@ -1,10 +1,10 @@
-ARG PARENT_DOCKER
+#ARG PARENT_DOCKER
 
 ARG NB_USER="jovyan"
 ARG NB_UID=1000
 ARG NB_GID=100
 
-FROM "$PARENT_DOCKER"
+FROM jupyter/base-notebook@sha256:0ec801994602a53d3917d0f07ccf4474a1ddf5ae419483b24681a3c42abc4ce5
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -99,3 +99,6 @@ RUN echo 'root:jamboree'|chpasswd && \
     usermod -aG sudo jovyan && \
     chmod 0440 /etc/sudoers && \
     chmod -R 755 /home/$NB_USER
+
+USER jovyan
+RUN R -e "IRkernel::installspec()"
