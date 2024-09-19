@@ -1,10 +1,10 @@
-ARG PARENT_DOCKER
+#ARG PARENT_DOCKER
 
 ARG NB_USER="jovyan"
 ARG NB_UID=1000
 ARG NB_GID=100
 
-FROM "$PARENT_DOCKER"
+FROM jupyter/base-notebook@sha256:0ec801994602a53d3917d0f07ccf4474a1ddf5ae419483b24681a3c42abc4ce5
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -65,6 +65,28 @@ RUN pip install scrublet
 RUN pip install pybiomart
 RUN mamba create -n pygenomictracks pygenometracks==3.8 -c bioconda -y
 
+## Lucas and Alex
+RUN mamba install star -c bioconda -y
+
+## Andreas
+RUN mamba install r-mass -c bioconda -y
+RUN mamba install r-seurat -c conda-forge -y
+RUN Rscript -e 'BiocManager::install("edgeR")'
+
+## Eugene
+RUN wget https://raw.githubusercontent.com/Katsevich-Lab/sceptre-igvf/main/requirements.txt
+RUN pip install -r requirements.txt
+RUN mamba install r-remotes -c conda-forge -y
+RUN Rscript -e 'remotes::install_github("ilia-kats/MuData")'
+RUN wget https://raw.githubusercontent.com/Katsevich-Lab/sceptre-igvf/main/renv.lock
+RUN mamba install r-renv -c conda-forge -y
+ENV RENV_PATHS_LIBRARY renv/library
+RUN Rscript -e 'renv::restore()'
+
+# Install IRkernel and register the kernel
+RUN R -e "install.packages('IRkernel', repos='http://cran.rstudio.com/')"
+RUN R -e "IRkernel::installspec()"
+
 ################################################
 
 
@@ -77,3 +99,6 @@ RUN echo 'root:jamboree'|chpasswd && \
     usermod -aG sudo jovyan && \
     chmod 0440 /etc/sudoers && \
     chmod -R 755 /home/$NB_USER
+
+USER jovyan
+RUN R -e "IRkernel::installspec()"

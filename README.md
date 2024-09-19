@@ -1,9 +1,17 @@
 ### Software installation
 
 Install `gcloud` SDK and `helm` on your computer.
+
+1) Debian-based OS
 ```bash
 sudo apt-get install google-cloud-sdk-gke-gcloud-auth-plugin
 sudo snap install helm --classic
+```
+
+2) MacOS
+```bash
+brew install helm
+gcloud components install gke-gcloud-auth-plugin
 ```
 
 Create a new project on GCP web console and enable the following APIs on the web console.
@@ -23,9 +31,13 @@ gcloud config set project "$GCP_PROJECT"
 
 ### Persistent disk for shared data
 
-Create a new `Zonal Standard Persistent Disk` in GCP project on the web console.
+Create a new `Zonal Standard (HDD) Persistent Disk` in GCP project on the web console.
 
-Note that `Zonal/Regional Balanced Persistent Disk` can be attached to at most 10 instances in read-only mode. So `Zonal Standard Persistent Disk` is recommended for a jamboree with >10 participants.
+Note that `Balanced (SSD) Persistent Disk` can be attached to at most 10 instances in read-only mode. Find details in the following documentation.
+- [PD limitation](https://cloud.google.com/compute/docs/disks#pdnumberlimits)
+- [Regional PD limitation](https://cloud.google.com/compute/docs/disks/regional-persistent-disk#limitations)
+
+So `Zonal Standard (HDD) Persistent Disk` is recommended for a jamboree with >10 participants.
 
 Make sure that it's created on the same zone as `ZONE` defined below. Attach it to any VM. SSH to the VM and format the disk and add shared data to `/mnt/shared`. All participants will have read access to this data disk:
 ```bash
@@ -57,6 +69,10 @@ Set your admin role. Use your gmail account for env var `ADMIN`.
 ```bash
 # admin's google account email
 ADMIN=leepc12@stanford.edu
+
+# get creds and configure kubectl
+gcloud container clusters get-credentials "$CLUSTER_NAME" --zone "$ZONE" --project "$GCP_PROJECT"
+kubectl config current-context
 
 kubectl create clusterrolebinding cluster-admin-binding \
   --clusterrole=cluster-admin \

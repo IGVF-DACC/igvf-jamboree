@@ -1,9 +1,9 @@
 REGISTRY?=leepc12
-IMAGE_NAME?=igvf-jamboree-2023
-CACHE_VERSION=v0.1.3
-VERSION=v0.1.4
+IMAGE_NAME?=igvf-jamboree-2024
+CACHE_VERSION=v1.0.0
+VERSION=v1.0.1
 
-PARENT_DOCKER=jupyter/base-notebook
+PARENT_DOCKER=jupyter/base-notebook@sha256:0ec801994602a53d3917d0f07ccf4474a1ddf5ae419483b24681a3c42abc4ce5
 
 all: build
 
@@ -15,7 +15,7 @@ build:
 	--build-arg PARENT_DOCKER=${PARENT_DOCKER} \
 	--build-arg BUILDKIT_INLINE_CACHE=1 \
 	--cache-from ${REGISTRY}/${IMAGE_NAME}:${CACHE_VERSION} \
-	  .
+	.
 
 .PHONY: build-no-cache
 build-no-cache:
