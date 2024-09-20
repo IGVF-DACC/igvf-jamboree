@@ -20,14 +20,14 @@ scheduling:
 
 singleuser:
   memory:
-    limit: 16G
-    guarantee: 12G
+    limit: 61G
+    guarantee: 55G
   cpu:
-    limit: 7
-    guarantee: 7
+    limit: 15
+    guarantee: 15
   image:
-    name: leepc12/igvf-jamboree-2023
-    tag: v0.1.4
+    name: ojolanki/igvf-jamboree-2024
+    tag: v1.0.4
   storage:
     # boot disk size
     capacity: 100Gi
@@ -49,7 +49,7 @@ hub:
   config:
     Authenticator:
       admin_users:
-        - leepc12
+        - ojolanki
         - bioinfolucas
       allowed_users:
         - test1
