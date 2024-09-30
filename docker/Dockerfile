@@ -72,8 +72,8 @@ RUN micromamba run -r ${MICROMAMBA_ROOT_PREFIX} -n base Rscript -e 'install.pack
 RUN micromamba run -r ${MICROMAMBA_ROOT_PREFIX} -n base Rscript -e 'renv::restore(lockfile = "/tmp/renv.lock")'
 
 # # Install additional pip dependencies
-RUN pip install openpyxl seqspec GMM_Demux adjustText igraph && \
-    pip install git+https://github.com/LucasSilvaFerreira/GTFProcessing.git
+#RUN pip install openpyxl seqspec GMM_Demux adjustText igraph && \
+#    pip install git+https://github.com/LucasSilvaFerreira/GTFProcessing.git
 
     #Install Python-related conda dependencies (including R base)
 RUN micromamba install -r ${MICROMAMBA_ROOT_PREFIX} -n base -y \
@@ -96,8 +96,12 @@ RUN micromamba install -r ${MICROMAMBA_ROOT_PREFIX} -n base -y \
     cmdstanpy
 
 # Install CLEANSER and its dependencies
-RUN micromamba run -r ${MICROMAMBA_ROOT_PREFIX} -n base pip install kb-python==0.28.2
+RUN micromamba run -r ${MICROMAMBA_ROOT_PREFIX} -n base pip install kb-python==0.28.2 openpyxl seqspec GMM_Demux adjustText igraph git+https://github.com/LucasSilvaFerreira/GTFProcessing.git
 RUN micromamba run -r ${MICROMAMBA_ROOT_PREFIX} -n base pip install --no-deps --no-cache-dir "git+https://github.com/jiangsizhu1201/CLEANSER" 
+
+# Install additional pip dependencies
+RUN pip install openpyxl seqspec GMM_Demux adjustText igraph && \
+    pip install git+https://github.com/LucasSilvaFerreira/GTFProcessing.git
 
 ENV PATH="$MICROMAMBA_ROOT_PREFIX/bin:$PATH"
 
