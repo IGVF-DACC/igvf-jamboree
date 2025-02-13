@@ -13,6 +13,6 @@ spec:
     - ReadOnlyMany
   persistentVolumeReclaimPolicy: Retain
   gcePersistentDisk:
-    pdName: jamboree-test 
+    pdName: igvf-2024-seattle-jamboree 
     readOnly: true
     fsType: ext4

@@ -137,7 +137,14 @@ Make a copy of `template.config.yaml` and rename it to `config.yaml`. Edit `conf
 
 To install a new deploy:
 ```bash
-helm upgrade --install --cleanup-on-fail --namespace jhub  --version 1.2.0 --values config.yaml --set global.safeToShowValues=true jhub jupyterhub/jupyterhub --timeout 30m
+helm upgrade --cleanup-on-fail \
+  --namespace jhub \
+  --version 3.2.1 \
+  --values config.yaml \
+  --set hub.extraConfig.debug="c.JupyterHub.log_level = 'DEBUG'" \
+  --set global.safeToShowValues=true \
+  jhub jupyterhub/jupyterhub \
+  --timeout 30m
 ```
 
 Get a public IP address of the load balancer. It takes about a minute to get an external IP address.

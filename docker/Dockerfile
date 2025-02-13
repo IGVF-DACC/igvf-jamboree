@@ -8,7 +8,10 @@ FROM jupyter/base-notebook@sha256:0ec801994602a53d3917d0f07ccf4474a1ddf5ae419483
 
 ENV DEBIAN_FRONTEND noninteractive
 
+ENV MICROMAMBA_ROOT_PREFIX="/opt/micromamba"
+
 USER root
+RUN mkdir /opt/micromamba
 RUN chmod -R 777 /opt && mkdir /data && chmod 775 /data
 RUN APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=1 && \
     apt-get update && \
@@ -20,6 +23,10 @@ RUN APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=1 && \
     wget \
     build-essential \
     git \
+    curl \
+    ssh \
+    vim \
+    ncurses-dev \
     software-properties-common \
     apt-transport-https \
     python3-pip && \
@@ -29,66 +36,74 @@ RUN APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=1 && \
 
 
 ########### custom software installation
+RUN conda install conda-forge::micromamba
+# Add necessary channels in the correct order of priority
+RUN micromamba config append channels conda-forge && \
+    micromamba config append channels bioconda && \
+    micromamba config append channels defaults
 
-# Update Ubuntu Software repository
-RUN pip install nextflow
-RUN pip uninstall GTFProcessing -y
-RUN pip install git+https://github.com/LucasSilvaFerreira/GTFProcessing.git
-RUN pip install gtfparse==1.3.0
-RUN pip install git+https://github.com/LucasSilvaFerreira/Perturb_Loader.git
-RUN pip install --quiet kb-python
-RUN conda install -c conda-forge mamba -y
-RUN mamba install -c bioconda nextflow -y
-RUN mamba install -c bioconda kallisto -y
-RUN mamba install -c anaconda openpyxl -y
-RUN mamba install -c conda-forge r-base -y
-RUN mamba install -c conda-forge r-gert -y
-RUN mamba install -c conda-forge r-ragg -y
-RUN mamba install -c conda-forge r-ggplot2
-RUN Rscript -e 'install.packages("BiocManager", repos = "http://cran.us.r-project.org")'
-RUN Rscript -e 'BiocManager::install("Rhdf5lib")'
-RUN Rscript -e 'BiocManager::install("rhdf5")'
-RUN Rscript -e 'BiocManager::install("ShortRead")'
-RUN Rscript -e 'install.packages("doParallel", repos = "http://cran.us.r-project.org")'
-RUN Rscript -e 'install.packages("devtools", repos = "http://cran.us.r-project.org")'
-RUN Rscript -e 'devtools::install_github("katsevich-lab/sceptre")'
-RUN Rscript -e 'devtools::install_github("chris-mcginnis-ucsf/MULTI-seq")'
-RUN pip install muon
-RUN pip install deeptools
+#Install Python-related conda dependencies (including R base)
+RUN micromamba install -r ${MICROMAMBA_ROOT_PREFIX} -n base -y \
+    python=3.10.14 \
+    r-base=4.4.0 
 
-RUN apt-get update -y && apt-get install -y curl gpg-agent
-RUN echo "deb https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
-RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
-RUN apt-get update -y && apt-get install -y google-cloud-sdk
+   
+# Install system-level dependencies
+USER root
 
-RUN pip install scrublet
-RUN pip install pybiomart
-RUN mamba create -n pygenomictracks pygenometracks==3.8 -c bioconda -y
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    gnupg2 \
+    dirmngr \
+    libxml2-dev \
+    libssl-dev \
+    zlib1g-dev \
+    libgit2-dev \
+    libtbb-dev  \
+    libcurl4-openssl-dev && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-## Lucas and Alex
-RUN mamba install star -c bioconda -y
 
-## Andreas
-RUN mamba install r-mass -c bioconda -y
-RUN mamba install r-seurat -c conda-forge -y
-RUN Rscript -e 'BiocManager::install("edgeR")'
+# # R setup for installing renv and restoring R environment from lock file
+COPY renv.lock /tmp/renv.lock
+RUN micromamba run -r ${MICROMAMBA_ROOT_PREFIX} -n base Rscript -e 'install.packages("renv", repos = "http://cran.us.r-project.org")' 
 
-## Eugene
-RUN wget https://raw.githubusercontent.com/Katsevich-Lab/sceptre-igvf/main/requirements.txt
-RUN pip install -r requirements.txt
-RUN mamba install r-remotes -c conda-forge -y
-RUN Rscript -e 'remotes::install_github("ilia-kats/MuData")'
-RUN wget https://raw.githubusercontent.com/Katsevich-Lab/sceptre-igvf/main/renv.lock
-RUN mamba install r-renv -c conda-forge -y
-ENV RENV_PATHS_LIBRARY renv/library
-RUN Rscript -e 'renv::restore()'
+RUN micromamba run -r ${MICROMAMBA_ROOT_PREFIX} -n base Rscript -e 'renv::restore(lockfile = "/tmp/renv.lock")'
 
-# Install IRkernel and register the kernel
-RUN R -e "install.packages('IRkernel', repos='http://cran.rstudio.com/')"
-RUN R -e "IRkernel::installspec()"
+# # Install additional pip dependencies
+#RUN pip install openpyxl seqspec GMM_Demux adjustText igraph && \
+#    pip install git+https://github.com/LucasSilvaFerreira/GTFProcessing.git
 
-################################################
+    #Install Python-related conda dependencies (including R base)
+RUN micromamba install -r ${MICROMAMBA_ROOT_PREFIX} -n base -y \
+    nextflow \
+    numpy=1.26.4 \
+    pandas=2.2.2 \
+    pip=24.2 \
+    kallisto=0.50.1 \
+    bustools=0.44.0 \
+    anndata=0.10.9 \
+    scanpy \
+    matplotlib \
+    ipykernel \
+    muon \
+    mudata \
+    seaborn \
+    scrublet \
+    networkx \
+    umap-learn \
+    cmdstanpy
 
+# Install CLEANSER and its dependencies
+RUN micromamba run -r ${MICROMAMBA_ROOT_PREFIX} -n base pip install kb-python==0.28.2 openpyxl seqspec GMM_Demux adjustText igraph git+https://github.com/LucasSilvaFerreira/GTFProcessing.git
+RUN micromamba run -r ${MICROMAMBA_ROOT_PREFIX} -n base pip install --no-deps --no-cache-dir "git+https://github.com/jiangsizhu1201/CLEANSER" 
+
+# Install additional pip dependencies
+RUN pip install openpyxl seqspec GMM_Demux adjustText igraph && \
+    pip install git+https://github.com/LucasSilvaFerreira/GTFProcessing.git
+
+ENV PATH="$MICROMAMBA_ROOT_PREFIX/bin:$PATH"
 
 ENV HOME /home/$NB_USER
 
@@ -99,6 +114,3 @@ RUN echo 'root:jamboree'|chpasswd && \
     usermod -aG sudo jovyan && \
     chmod 0440 /etc/sudoers && \
     chmod -R 755 /home/$NB_USER
-
-USER jovyan
-RUN R -e "IRkernel::installspec()"
