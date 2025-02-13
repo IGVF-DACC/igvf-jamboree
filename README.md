@@ -137,7 +137,7 @@ Make a copy of `template.config.yaml` and rename it to `config.yaml`. Edit `conf
 
 To install a new deploy:
 ```bash
-helm upgrade --cleanup-on-fail \
+helm upgrade --install --cleanup-on-fail \
   --namespace jhub \
   --version 3.2.1 \
   --values config.yaml \
